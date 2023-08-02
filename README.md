@@ -3,7 +3,7 @@ Fork of noob gallery to match my workflow
 
 ## Why????
 
-I tested out [[noobgallery][https://github.com/brendannee/noobgallery]] for hosting an S3 static site of pictures and mostly liked it, but it didn't quite fit my workflow.
+I tested out [[https://github.com/brendannee/noobgallery][noobgallery]] for hosting an S3 static site of pictures and mostly liked it, but it didn't quite fit my workflow.
 
 I was looking at hosting all of my sports pics in albums, and my first impression was that it fit the bill - no login required, simple and useful viewer, sorted by directory structure, etc.
 
