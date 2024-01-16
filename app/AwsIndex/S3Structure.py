@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
 
 import boto3
+
+import json
 import os
-from os.path import join,dirname
 from dotenv import load_dotenv
+from os.path import join,dirname
+
+import logging
+
+logger=logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+ch = logging.FileHandler('log.txt', mode='w')
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+logger.debug('Logging initialized')
 
 load_dotenv(join(dirname(__file__),'..','..','.env'))
 
@@ -12,16 +25,9 @@ AWS_KEY = os.getenv('AWS_ACCESS_KEY')
 AWS_SECRET = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION= os.getenv('AWS_REGION')
 
-'''
-s3 = boto3.resource('s3',aws_access_key_id = AWS_KEY, aws_secret_access_key = AWS_SECRET, region_name = AWS_REGION)
-
-def list_all_bucket_contents(resource, bucket_name):
-    bucket = resource.Bucket(bucket_name)
-    for obj in bucket.objects.all():
-        print(obj.key)
-'''
-
 s3 = boto3.client('s3',aws_access_key_id = AWS_KEY, aws_secret_access_key = AWS_SECRET, region_name = AWS_REGION)
+
+
 def list_all_bucket_contents(client, bucket_name):
     paginator = client.get_paginator('list_objects_v2')
     pages = paginator.paginate(Bucket=bucket_name)
@@ -30,6 +36,9 @@ def list_all_bucket_contents(client, bucket_name):
     # Create a dict that has a key of the s3 "dir" 
     # Check if dir doesn't exist, if not, add key with empty list
     # append file name to list
+    #
+    # An interesting thing is the keys are returned in alpha order.  May be useful if
+    # we decide to skip the mapping dict and generate files automatically  
     dirstructure = dict()
     for page in pages:
         for obj in page['Contents']:
@@ -50,6 +59,17 @@ def list_all_bucket_contents(client, bucket_name):
                     dirstructure[dirname].append(filename)
     return dirstructure
 
+
+
 if __name__ == '__main__':
     structure = list_all_bucket_contents(s3, S3_BUCKET)
-    print(structure)
+    logger.debug(structure)
+    #index_info = json_output = generate_album_index('Test Images','~/Pictures/test/')
+    #json_output = json.dumps(index_info)
+    #print(json_output)
+    #html_output = generate_album_html('Test Album Name', '~/Pictures/test')
+    #Can generate snippet of json and html per file and do the looping only once
+    #use fds to create index.json and indext.html files in place
+
+    #logger.warning(html_output)
+    
